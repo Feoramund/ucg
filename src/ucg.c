@@ -498,8 +498,11 @@ int ucg_decode_grapheme_clusters(
 	for (int byte_index = 0, byte_iterator = 0; byte_index < str_len; byte_index = byte_iterator) {
 		int32_t this_rune = ucg_decode_rune(str, str_len, &byte_iterator);
 		if (this_rune < 0) {
-			// Report the last valid rune in the out parameter.
-			if (out_rune_count != NULL) { *out_rune_count = state.rune_count; }
+			// There was a Unicode parsing error; bail out.
+			if (out_graphemes != NULL)      { *out_graphemes = state.graphemes; }
+			if (out_rune_count != NULL)     { *out_rune_count = state.rune_count; }
+			if (out_grapheme_count != NULL) { *out_grapheme_count = state.grapheme_count; }
+			if (out_width != NULL)          { *out_width = state.width; }
 
 			// Return the error.
 			return (int)this_rune;
