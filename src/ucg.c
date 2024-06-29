@@ -21,11 +21,11 @@ void *ucg_default_malloc(intptr_t size, void *ctx)
     return malloc(size);
 }
 
-void *ucg_default_realloc(intptr_t ptr, intptr_t old_size, intptr_t new_size, void *ctx)
+void *ucg_default_realloc(void* ptr, intptr_t old_size, intptr_t new_size, void *ctx)
 {
     (void)ctx;
     (void)old_size;
-    return realloc((void*)ptr, new_size);
+    return realloc(ptr, new_size);
 }
 
 void ucg_default_free(void *ptr, intptr_t size, void *ctx)
@@ -413,7 +413,7 @@ void _ucg_decode_grapheme_clusters_deferred_step(
 
 		if (allocator != NULL) {
 			state->graphemes = allocator->realloc(
-				(intptr_t)state->graphemes,
+				state->graphemes,
 				sizeof(ucg_grapheme) * (state->grapheme_count),
 				sizeof(ucg_grapheme) * (1 + state->grapheme_count),
 				allocator->ctx);

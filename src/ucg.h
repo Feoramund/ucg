@@ -19,14 +19,14 @@ extern "C" {
  * An arena or stack allocator that supports fast realloc is recommended. */
 typedef struct {
 	void* (*malloc)(intptr_t size, void* ctx);
-	void* (*realloc)(intptr_t ptr, intptr_t old_size, intptr_t new_size, void* ctx);
+	void* (*realloc)(void* ptr, intptr_t old_size, intptr_t new_size, void* ctx);
 	void  (*free)(void* ptr, intptr_t size, void* ctx);
 
 	void* ctx;
 } ucg_allocator;
 
 void *ucg_default_malloc(intptr_t size, void *ctx);
-void *ucg_default_realloc(intptr_t ptr, intptr_t old_size, intptr_t new_size, void *ctx);
+void *ucg_default_realloc(void* ptr, intptr_t old_size, intptr_t new_size, void *ctx);
 void  ucg_default_free(void *ptr, intptr_t size, void *ctx);
 
 /* This is the default allocator. Pass this if you don't mind using malloc. */
