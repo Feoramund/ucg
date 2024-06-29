@@ -412,7 +412,7 @@ void _ucg_decode_grapheme_clusters_deferred_step(
 		state->width += ucg_normalized_east_asian_width(this_rune);
 
 		if (allocator != NULL) {
-			state->graphemes = allocator->realloc(
+			state->graphemes = (ucg_grapheme*)allocator->realloc(
 				state->graphemes,
 				sizeof(ucg_grapheme) * (state->grapheme_count),
 				sizeof(ucg_grapheme) * (1 + state->grapheme_count),
