@@ -513,7 +513,7 @@ int ucg_decode_grapheme_clusters(
 		// GB3:                 CR   ×   LF
 		// GB4: (Control | CR | LF)  ÷
 		// GB5:                      ÷  (Control | CR | LF)
-		if (this_rune == (int32_t)'\n' && state.last_rune == '\r') {
+		if (this_rune == '\n' && state.last_rune == '\r') {
 			state.last_rune_breaks_forward = false;
 			state.bypass_next_rune = false;
 			UCG_DEFERRED_DECODE_STEP(); continue;
