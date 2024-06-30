@@ -18,7 +18,7 @@ int main(int argc, const char** argv) {
 		test_case t = official_grapheme_break_test_cases[i];
 
 		ucg_int grapheme_count;
-		ucg_int result = ucg_grapheme_count((uint8_t*)t.str, strlen(t.str), NULL, &grapheme_count, NULL);
+		ucg_int result = ucg_grapheme_count((uint8_t*)t.str, (ucg_int)strlen(t.str), NULL, &grapheme_count, NULL);
 		if (result != 0) {
 			fprintf(stderr, "(#% 4li) failed due to UTF-8 parsing error: %li\n", i, result);
 		}
@@ -33,7 +33,7 @@ int main(int argc, const char** argv) {
 	for (ucg_int i = 0; i < (ucg_int)(sizeof(official_emoji_test_cases) / sizeof(test_case)); i += 1) {
 		test_case t = official_emoji_test_cases[i];
 		ucg_int grapheme_count;
-		ucg_int result = ucg_grapheme_count((uint8_t*)t.str, strlen(t.str), NULL, &grapheme_count, NULL);
+		ucg_int result = ucg_grapheme_count((uint8_t*)t.str, (ucg_int)strlen(t.str), NULL, &grapheme_count, NULL);
 		if (result != 0) {
 			fprintf(stderr, "(#% 4li) failed due to UTF-8 parsing error: %li\n", i, result);
 		}
