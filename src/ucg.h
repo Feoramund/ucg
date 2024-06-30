@@ -79,6 +79,8 @@ int ucg_decode_grapheme_clusters(
 /* These procedures are part of how UCG decodes graphemes, and as such, they are
  * made public here in the event that they are useful. */
 
+typedef int32_t ucg_rune;
+
 #define UCG_EOF                 (-1)
 #define UCG_EXPECTED_MORE_BYTES (-2)
 #define UCG_INVALID_RUNE        (-3)
@@ -86,32 +88,32 @@ int ucg_decode_grapheme_clusters(
 /* This procedure decodes a byte string and returns a valid Unicode codepoint or
  * one of the errors above. The byte iterator is increased as needed while
  * reading the string. */
-int32_t ucg_decode_rune(const uint8_t* str, int str_len, int* byte_iterator);
+ucg_rune ucg_decode_rune(const uint8_t* str, int str_len, int* byte_iterator);
 
 /* The following procedures all return true or false based on whether a Unicode
  * codepoint fits into a certain class. */
 
-bool ucg_is_control                         (int32_t r);
-bool ucg_is_emoji_modifier                  (int32_t r);
-bool ucg_is_regional_indicator              (int32_t r);
-bool ucg_is_enclosing_mark                  (int32_t r);
-bool ucg_is_prepended_concatenation_mark    (int32_t r);
-bool ucg_is_spacing_mark                    (int32_t r);
-bool ucg_is_nonspacing_mark                 (int32_t r);
-bool ucg_is_emoji_extended_pictographic     (int32_t r);
-bool ucg_is_grapheme_extend                 (int32_t r);
-bool ucg_is_hangul_syllable_leading         (int32_t r);
-bool ucg_is_hangul_syllable_vowel           (int32_t r);
-bool ucg_is_hangul_syllable_trailing        (int32_t r);
-bool ucg_is_hangul_syllable_lv              (int32_t r);
-bool ucg_is_hangul_syllable_lvt             (int32_t r);
-bool ucg_is_indic_consonant_preceding_repha (int32_t r);
-bool ucg_is_indic_consonant_prefixed        (int32_t r);
-bool ucg_is_indic_conjunct_break_linker     (int32_t r);
-bool ucg_is_indic_conjunct_break_consonant  (int32_t r);
-bool ucg_is_indic_conjunct_break_extend     (int32_t r);
-bool ucg_is_gcb_prepend_class               (int32_t r);
-bool ucg_is_gcb_extend_class                (int32_t r);
+bool ucg_is_control                         (ucg_rune r);
+bool ucg_is_emoji_modifier                  (ucg_rune r);
+bool ucg_is_regional_indicator              (ucg_rune r);
+bool ucg_is_enclosing_mark                  (ucg_rune r);
+bool ucg_is_prepended_concatenation_mark    (ucg_rune r);
+bool ucg_is_spacing_mark                    (ucg_rune r);
+bool ucg_is_nonspacing_mark                 (ucg_rune r);
+bool ucg_is_emoji_extended_pictographic     (ucg_rune r);
+bool ucg_is_grapheme_extend                 (ucg_rune r);
+bool ucg_is_hangul_syllable_leading         (ucg_rune r);
+bool ucg_is_hangul_syllable_vowel           (ucg_rune r);
+bool ucg_is_hangul_syllable_trailing        (ucg_rune r);
+bool ucg_is_hangul_syllable_lv              (ucg_rune r);
+bool ucg_is_hangul_syllable_lvt             (ucg_rune r);
+bool ucg_is_indic_consonant_preceding_repha (ucg_rune r);
+bool ucg_is_indic_consonant_prefixed        (ucg_rune r);
+bool ucg_is_indic_conjunct_break_linker     (ucg_rune r);
+bool ucg_is_indic_conjunct_break_consonant  (ucg_rune r);
+bool ucg_is_indic_conjunct_break_extend     (ucg_rune r);
+bool ucg_is_gcb_prepend_class               (ucg_rune r);
+bool ucg_is_gcb_extend_class                (ucg_rune r);
 
 #ifdef __cplusplus
 }

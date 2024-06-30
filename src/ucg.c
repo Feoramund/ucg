@@ -8,7 +8,7 @@
 #include "ucg.h"
 #include "ucg_tables.h"
 
-#define UCG_TABLE_LEN(t) (sizeof(t) / sizeof(int32_t))
+#define UCG_TABLE_LEN(t) (sizeof(t) / sizeof(ucg_rune))
 
 #define ZERO_WIDTH_SPACE      0x200B
 #define ZERO_WIDTH_NON_JOINER 0x200C
@@ -42,7 +42,7 @@ const ucg_allocator ucg_default_allocator = {
 	NULL,
 };
 
-int32_t ucg_decode_rune(const uint8_t* str, int strlen, int* byte_iterator) {
+ucg_rune ucg_decode_rune(const uint8_t* str, int strlen, int* byte_iterator) {
 	assert(str != NULL);
 	assert(byte_iterator != NULL);
 
@@ -58,7 +58,7 @@ int32_t ucg_decode_rune(const uint8_t* str, int strlen, int* byte_iterator) {
 	if (*c <= 0x7F) {
 		return *c;
 	} else {
-		int32_t rune = 0;
+		ucg_rune rune = 0;
 		uint8_t first_byte = *c;
 
 		// Check for well-formedness on the first byte.
@@ -92,7 +92,7 @@ int32_t ucg_decode_rune(const uint8_t* str, int strlen, int* byte_iterator) {
 	}
 }
 
-int ucg_binary_search(int32_t value, const int32_t* table, int length, int stride) {
+int ucg_binary_search(ucg_rune value, const ucg_rune* table, int length, int stride) {
 	assert(table != NULL);
 	assert(length > 0);
 	assert(stride > 0);
@@ -119,7 +119,7 @@ int ucg_binary_search(int32_t value, const int32_t* table, int length, int strid
 // The procedures below are accurate as of Unicode 15.1.0.
 //
 
-bool ucg_is_control(int32_t r) {
+bool ucg_is_control(ucg_rune r) {
 	if (r <= 0x1F || (0x7F <= r && r <= 0x9F)) {
 		return true;
 	}
@@ -127,17 +127,17 @@ bool ucg_is_control(int32_t r) {
 }
 
 // Emoji_Modifier
-bool ucg_is_emoji_modifier(int32_t r) {
+bool ucg_is_emoji_modifier(ucg_rune r) {
 	return 0x1F3FB <= r && r <= 0x1F3FF;
 }
 
 // Regional_Indicator
-bool ucg_is_regional_indicator(int32_t r) {
+bool ucg_is_regional_indicator(ucg_rune r) {
 	return 0x1F1E6 <= r && r <= 0x1F1FF;
 }
 
 // General_Category=Enclosing_Mark
-bool ucg_is_enclosing_mark(int32_t r) {
+bool ucg_is_enclosing_mark(ucg_rune r) {
 	switch (r) {
 	case 0x0488:
 	case 0x0489:
@@ -153,7 +153,7 @@ bool ucg_is_enclosing_mark(int32_t r) {
 }
 
 // Prepended_Concatenation_Mark
-bool ucg_is_prepended_concatenation_mark(int32_t r) {
+bool ucg_is_prepended_concatenation_mark(ucg_rune r) {
 	switch (r) {
 	case 0x006DD:
 	case 0x0070F:
@@ -170,7 +170,7 @@ bool ucg_is_prepended_concatenation_mark(int32_t r) {
 }
 
 // General_Category=Spacing_Mark
-bool ucg_is_spacing_mark(int32_t r) {
+bool ucg_is_spacing_mark(ucg_rune r) {
 	intptr_t p = ucg_binary_search(r, ucg_spacing_mark_ranges, UCG_TABLE_LEN(ucg_spacing_mark_ranges)/2, 2);
 	if (p >= 0 && ucg_spacing_mark_ranges[p] <= r && r <= ucg_spacing_mark_ranges[p+1]) {
 		return true;
@@ -179,7 +179,7 @@ bool ucg_is_spacing_mark(int32_t r) {
 }
 
 // General_Category=Nonspacing_Mark
-bool ucg_is_nonspacing_mark(int32_t r) {
+bool ucg_is_nonspacing_mark(ucg_rune r) {
 	intptr_t p = ucg_binary_search(r, ucg_nonspacing_mark_ranges, UCG_TABLE_LEN(ucg_nonspacing_mark_ranges)/2, 2);
 	if (p >= 0 && ucg_nonspacing_mark_ranges[p] <= r && r <= ucg_nonspacing_mark_ranges[p+1]) {
 		return true;
@@ -188,7 +188,7 @@ bool ucg_is_nonspacing_mark(int32_t r) {
 }
 
 // Extended_Pictographic
-bool ucg_is_emoji_extended_pictographic(int32_t r) {
+bool ucg_is_emoji_extended_pictographic(ucg_rune r) {
 	intptr_t p = ucg_binary_search(r, ucg_emoji_extended_pictographic_ranges, UCG_TABLE_LEN(ucg_emoji_extended_pictographic_ranges)/2, 2);
 	if (p >= 0 && ucg_emoji_extended_pictographic_ranges[p] <= r && r <= ucg_emoji_extended_pictographic_ranges[p+1]) {
 		return true;
@@ -197,7 +197,7 @@ bool ucg_is_emoji_extended_pictographic(int32_t r) {
 }
 
 // Grapheme_Extend
-bool ucg_is_grapheme_extend(int32_t r) {
+bool ucg_is_grapheme_extend(ucg_rune r) {
 	intptr_t p = ucg_binary_search(r, ucg_grapheme_extend_ranges, UCG_TABLE_LEN(ucg_grapheme_extend_ranges)/2, 2);
 	if (p >= 0 && ucg_grapheme_extend_ranges[p] <= r && r <= ucg_grapheme_extend_ranges[p+1]) {
 		return true;
@@ -207,22 +207,22 @@ bool ucg_is_grapheme_extend(int32_t r) {
 
 
 // Hangul_Syllable_Type=Leading_Jamo
-bool ucg_is_hangul_syllable_leading(int32_t r) {
+bool ucg_is_hangul_syllable_leading(ucg_rune r) {
 	return (0x1100 <= r && r <= 0x115F) || (0xA960 <= r && r <= 0xA97C);
 }
 
 // Hangul_Syllable_Type=Vowel_Jamo
-bool ucg_is_hangul_syllable_vowel(int32_t r) {
+bool ucg_is_hangul_syllable_vowel(ucg_rune r) {
 	return (0x1160 <= r && r <= 0x11A7) || (0xD7B0 <= r && r <= 0xD7C6);
 }
 
 // Hangul_Syllable_Type=Trailing_Jamo
-bool ucg_is_hangul_syllable_trailing(int32_t r) {
+bool ucg_is_hangul_syllable_trailing(ucg_rune r) {
 	return (0x11A8 <= r && r <= 0x11FF) || (0xD7CB <= r && r <= 0xD7FB);
 }
 
 // Hangul_Syllable_Type=LV_Syllable
-bool ucg_is_hangul_syllable_lv(int32_t r) {
+bool ucg_is_hangul_syllable_lv(ucg_rune r) {
 	intptr_t p = ucg_binary_search(r, ucg_hangul_syllable_lv_singlets, UCG_TABLE_LEN(ucg_hangul_syllable_lv_singlets), 1);
 	if (p >= 0 && r == ucg_hangul_syllable_lv_singlets[p]) {
 		return true;
@@ -231,7 +231,7 @@ bool ucg_is_hangul_syllable_lv(int32_t r) {
 }
 
 // Hangul_Syllable_Type=LVT_Syllable
-bool ucg_is_hangul_syllable_lvt(int32_t r) {
+bool ucg_is_hangul_syllable_lvt(ucg_rune r) {
 	intptr_t p = ucg_binary_search(r, ucg_hangul_syllable_lvt_ranges, UCG_TABLE_LEN(ucg_hangul_syllable_lvt_ranges)/2, 2);
 	if (p >= 0 && ucg_hangul_syllable_lvt_ranges[p] <= r && r <= ucg_hangul_syllable_lvt_ranges[p+1]) {
 		return true;
@@ -241,7 +241,7 @@ bool ucg_is_hangul_syllable_lvt(int32_t r) {
 
 
 // Indic_Syllabic_Category=Consonant_Preceding_Repha
-bool ucg_is_indic_consonant_preceding_repha(int32_t r) {
+bool ucg_is_indic_consonant_preceding_repha(ucg_rune r) {
 	switch (r) {
 	case 0x00D4E:
 	case 0x11941:
@@ -253,7 +253,7 @@ bool ucg_is_indic_consonant_preceding_repha(int32_t r) {
 }
 
 // Indic_Syllabic_Category=Consonant_Prefixed
-bool ucg_is_indic_consonant_prefixed(int32_t r) {
+bool ucg_is_indic_consonant_prefixed(ucg_rune r) {
 	switch (r) {
 	case 0x1193F:
 	case 0x11A3A:
@@ -267,7 +267,7 @@ bool ucg_is_indic_consonant_prefixed(int32_t r) {
 }
 
 // Indic_Conjunct_Break=Linker
-bool ucg_is_indic_conjunct_break_linker(int32_t r) {
+bool ucg_is_indic_conjunct_break_linker(ucg_rune r) {
 	switch (r) {
 	case 0x094D:
 	case 0x09CD:
@@ -281,7 +281,7 @@ bool ucg_is_indic_conjunct_break_linker(int32_t r) {
 }
 
 // Indic_Conjunct_Break=Consonant
-bool ucg_is_indic_conjunct_break_consonant(int32_t r) {
+bool ucg_is_indic_conjunct_break_consonant(ucg_rune r) {
 	intptr_t p = ucg_binary_search(r, ucg_indic_conjunct_break_consonant_ranges, UCG_TABLE_LEN(ucg_indic_conjunct_break_consonant_ranges)/2, 2);
 	if (p >= 0 && ucg_indic_conjunct_break_consonant_ranges[p] <= r && r <= ucg_indic_conjunct_break_consonant_ranges[p+1]) {
 		return true;
@@ -290,7 +290,7 @@ bool ucg_is_indic_conjunct_break_consonant(int32_t r) {
 }
 
 // Indic_Conjunct_Break=Extend
-bool ucg_is_indic_conjunct_break_extend(int32_t r) {
+bool ucg_is_indic_conjunct_break_extend(ucg_rune r) {
 	intptr_t p = ucg_binary_search(r, ucg_indic_conjunct_break_extend_ranges, UCG_TABLE_LEN(ucg_indic_conjunct_break_extend_ranges)/2, 2);
 	if (p >= 0 && ucg_indic_conjunct_break_extend_ranges[p] <= r && r <= ucg_indic_conjunct_break_extend_ranges[p+1]) {
 		return true;
@@ -306,7 +306,7 @@ Indic_Syllabic_Category = Consonant_Prefixed, or
 Prepended_Concatenation_Mark = Yes
 ```
 */
-bool ucg_is_gcb_prepend_class(int32_t r) {
+bool ucg_is_gcb_prepend_class(ucg_rune r) {
 	return ucg_is_indic_consonant_preceding_repha(r) || ucg_is_indic_consonant_prefixed(r) || ucg_is_prepended_concatenation_mark(r);
 }
 
@@ -323,7 +323,7 @@ U+200C ZERO WIDTH NON-JOINER
 plus a few General_Category = Spacing_Mark needed for canonical equivalence.
 ```
 */
-bool ucg_is_gcb_extend_class(int32_t r) {
+bool ucg_is_gcb_extend_class(ucg_rune r) {
 	return ucg_is_grapheme_extend(r) || ucg_is_emoji_modifier(r);
 }
 
@@ -333,7 +333,7 @@ bool ucg_is_gcb_extend_class(int32_t r) {
 // - 0 if non-printable / zero-width, or
 // - 1 in all other cases.
 //
-int ucg_normalized_east_asian_width(int32_t r) {
+int ucg_normalized_east_asian_width(ucg_rune r) {
 	if (ucg_is_control(r)) {
 		return 0;
 	} else if (r <= 0x10FF) {
@@ -375,7 +375,7 @@ typedef struct {
 	int grapheme_count;
 	int width;
 
-	int32_t last_rune;
+	ucg_rune last_rune;
 	bool last_rune_breaks_forward;
 
 	int last_width;
@@ -405,7 +405,7 @@ void _ucg_decode_grapheme_clusters_deferred_step(
 	ucg_allocator* allocator,
 	ucg_decoder_state* state,
 	int byte_index,
-	int32_t this_rune
+	ucg_rune this_rune
 ) {
 	// "Break at the start and end of text, unless the text is empty."
 	//
@@ -503,7 +503,7 @@ int ucg_decode_grapheme_clusters(
 #define UCG_DEFERRED_DECODE_STEP() (_ucg_decode_grapheme_clusters_deferred_step(allocator, &state, byte_index, this_rune))
 
 	for (int byte_index = 0, byte_iterator = 0; byte_index < str_len; byte_index = byte_iterator) {
-		int32_t this_rune = ucg_decode_rune(str, str_len, &byte_iterator);
+		ucg_rune this_rune = ucg_decode_rune(str, str_len, &byte_iterator);
 		if (this_rune < 0) {
 			// There was a Unicode parsing error; bail out.
 			if (out_graphemes != NULL)      { *out_graphemes = state.graphemes; }

@@ -9,13 +9,13 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
+#include "ucg.h"
 
 //
 // The tables below are accurate as of Unicode 15.1.0.
 //
 
-static const int32_t ucg_spacing_mark_ranges[] = {
+static const ucg_rune ucg_spacing_mark_ranges[] = {
 	0x0903, 0x0903,
 	0x093B, 0x093B,
 	0x093E, 0x0940,
@@ -200,7 +200,7 @@ static const int32_t ucg_spacing_mark_ranges[] = {
 	0x1D16D, 0x1D172,
 };
 
-static const int32_t ucg_nonspacing_mark_ranges[] = {
+static const ucg_rune ucg_nonspacing_mark_ranges[] = {
 	0x0300, 0x036F,
 	0x0483, 0x0487,
 	0x0591, 0x05BD,
@@ -549,7 +549,7 @@ static const int32_t ucg_nonspacing_mark_ranges[] = {
 	0xE0100, 0xE01EF,
 };
 
-static const int32_t ucg_emoji_extended_pictographic_ranges[] = {
+static const ucg_rune ucg_emoji_extended_pictographic_ranges[] = {
 	0x00A9, 0x00A9,
 	0x00AE, 0x00AE,
 	0x203C, 0x203C,
@@ -1063,7 +1063,7 @@ static const int32_t ucg_emoji_extended_pictographic_ranges[] = {
 	0x1FC00, 0x1FFFD,
 };
 
-static const int32_t ucg_grapheme_extend_ranges[] = {
+static const ucg_rune ucg_grapheme_extend_ranges[] = {
 	0x0300, 0x036F,
 	0x0483, 0x0487,
 	0x0488, 0x0489,
@@ -1442,7 +1442,7 @@ static const int32_t ucg_grapheme_extend_ranges[] = {
 	0xE0100, 0xE01EF,
 };
 
-static const int32_t ucg_hangul_syllable_lv_singlets[] = {
+static const ucg_rune ucg_hangul_syllable_lv_singlets[] = {
 	0xAC00,
 	0xAC1C,
 	0xAC38,
@@ -1844,7 +1844,7 @@ static const int32_t ucg_hangul_syllable_lv_singlets[] = {
 	0xD788,
 };
 
-static const int32_t ucg_hangul_syllable_lvt_ranges[] = {
+static const ucg_rune ucg_hangul_syllable_lvt_ranges[] = {
 	0xAC01, 0xAC1B,
 	0xAC1D, 0xAC37,
 	0xAC39, 0xAC53,
@@ -2246,7 +2246,7 @@ static const int32_t ucg_hangul_syllable_lvt_ranges[] = {
 	0xD789, 0xD7A3,
 };
 
-static const int32_t ucg_indic_conjunct_break_consonant_ranges[] = {
+static const ucg_rune ucg_indic_conjunct_break_consonant_ranges[] = {
 	0x0915, 0x0939,
 	0x0958, 0x095F,
 	0x0978, 0x097F,
@@ -2275,7 +2275,7 @@ static const int32_t ucg_indic_conjunct_break_consonant_ranges[] = {
 	0x0D15, 0x0D3A,
 };
 
-static const int32_t ucg_indic_conjunct_break_extend_ranges[] = {
+static const ucg_rune ucg_indic_conjunct_break_extend_ranges[] = {
 	0x0300, 0x034E,
 	0x0350, 0x036F,
 	0x0483, 0x0487,
@@ -2452,7 +2452,7 @@ static const int32_t ucg_indic_conjunct_break_extend_ranges[] = {
 // Everything else is 1.
 //
 // Derived from: https://unicode.org/Public/15.1.0/ucd/EastAsianWidth.txt
-static const int32_t ucg_normalized_east_asian_width_ranges[] = {
+static const ucg_rune ucg_normalized_east_asian_width_ranges[] = {
 	0x0000, 0x10FF, 1,
 	0x1100, 0x115F, 2,
 	0x1160, 0x2319, 1,
