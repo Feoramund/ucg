@@ -52,6 +52,7 @@ typedef struct {
 	int expected_clusters;
 } test_case;
 
+#pragma execution_character_set("utf-8")
 
 // https://unicode.org/Public/15.1.0/ucd/auxiliary/GraphemeBreakTest.txt
 //
