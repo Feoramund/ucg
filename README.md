@@ -1,5 +1,7 @@
 # UCG
 
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Feoramund/ucg/ci.yml)
+
 **UCG** **C**ounts **G**raphemes. That is its one job, and it does it well.
 
 In short, UCG is a C99 implementation of grapheme segmentation from Unicode®
