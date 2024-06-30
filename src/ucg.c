@@ -35,6 +35,13 @@ void ucg_default_free(void *ptr, intptr_t size, void *ctx)
     free(ptr);
 }
 
+const ucg_allocator ucg_default_allocator = {
+	ucg_default_malloc,
+	ucg_default_realloc,
+	ucg_default_free,
+	NULL,
+};
+
 int32_t ucg_decode_rune(const uint8_t* str, int strlen, int* byte_iterator) {
 	assert(str != NULL);
 	assert(byte_iterator != NULL);

@@ -30,12 +30,7 @@ void *ucg_default_realloc(void* ptr, intptr_t old_size, intptr_t new_size, void 
 void  ucg_default_free(void *ptr, intptr_t size, void *ctx);
 
 /* This is the default allocator. Pass this if you don't mind using malloc. */
-static ucg_allocator ucg_default_allocator = {
-	ucg_default_malloc,
-	ucg_default_realloc,
-	ucg_default_free,
-	NULL,
-};
+extern const ucg_allocator ucg_default_allocator;
 
 /* This is the data that is allocated when an allocator is passed to
  * ucg_decode_grapheme_clusters. */
