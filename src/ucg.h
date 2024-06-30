@@ -13,6 +13,10 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
+/* For the sake of compatibility, the general-purpose integers used throughout
+ * this library are defined to be at least 32-bits large but may be larger. */
+typedef int_fast32_t ucg_int;
+
 /* This is UCG's custom allocator structure, allowing you to specify precisely
  * how `ucg_decode_grapheme_clusters` allocates its memory.
  *
@@ -35,21 +39,21 @@ extern const ucg_allocator ucg_default_allocator;
 /* This is the data that is allocated when an allocator is passed to
  * ucg_decode_grapheme_clusters. */
 typedef struct {
-	int byte_index;
-	int rune_index;
-	int width;
+	ucg_int byte_index;
+	ucg_int rune_index;
+	ucg_int width;
 } ucg_grapheme;
 
 /* This procedure merely counts the runes, graphemes, and width without
  * incurring any allocations. It is a thin wrapper over
  * ucg_decode_grapheme_clusters that passes NULL for an allocator. */
-int ucg_grapheme_count(
+ucg_int ucg_grapheme_count(
 	const uint8_t* str,
-	int str_len,
+	ucg_int str_len,
 
-	int* out_runes,
-	int* out_graphemes,
-	int* out_width);
+	ucg_int* out_runes,
+	ucg_int* out_graphemes,
+	ucg_int* out_width);
 
 /* This is the heart of the library. If you want specific information about each
  * grapheme, you can pass an allocator and a pointer to a `grapheme*` variable
@@ -65,21 +69,21 @@ int ucg_grapheme_count(
  *
  * The return value is 0 on success or negative (one of the error values below)
  * if there was a trouble with parsing the string as UTF-8. */
-int ucg_decode_grapheme_clusters(
+ucg_int ucg_decode_grapheme_clusters(
 	ucg_allocator* allocator,
 	const uint8_t* str,
-	int str_len,
+	ucg_int str_len,
 
 	ucg_grapheme** out_graphemes,
-	int* out_rune_count,
-	int* out_grapheme_count,
-	int* out_width);
+	ucg_int* out_rune_count,
+	ucg_int* out_grapheme_count,
+	ucg_int* out_width);
 
 
 /* These procedures are part of how UCG decodes graphemes, and as such, they are
  * made public here in the event that they are useful. */
 
-typedef int32_t ucg_rune;
+typedef ucg_int ucg_rune;
 
 #define UCG_EOF                 (-1)
 #define UCG_EXPECTED_MORE_BYTES (-2)
@@ -88,7 +92,7 @@ typedef int32_t ucg_rune;
 /* This procedure decodes a byte string and returns a valid Unicode codepoint or
  * one of the errors above. The byte iterator is increased as needed while
  * reading the string. */
-ucg_rune ucg_decode_rune(const uint8_t* str, int str_len, int* byte_iterator);
+ucg_rune ucg_decode_rune(const uint8_t* str, ucg_int str_len, ucg_int* byte_iterator);
 
 /* The following procedures all return true or false based on whether a Unicode
  * codepoint fits into a certain class. */

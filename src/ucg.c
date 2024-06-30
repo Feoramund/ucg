@@ -42,7 +42,7 @@ const ucg_allocator ucg_default_allocator = {
 	NULL,
 };
 
-ucg_rune ucg_decode_rune(const uint8_t* str, int strlen, int* byte_iterator) {
+ucg_rune ucg_decode_rune(const uint8_t* str, ucg_int strlen, ucg_int* byte_iterator) {
 	assert(str != NULL);
 	assert(byte_iterator != NULL);
 
@@ -65,7 +65,7 @@ ucg_rune ucg_decode_rune(const uint8_t* str, int strlen, int* byte_iterator) {
 		if      (0x80 <= first_byte && first_byte < 0xC1) { return UCG_INVALID_RUNE; }
 		else if (0xF5 <= first_byte && first_byte < 0xFF) { return UCG_INVALID_RUNE; }
 
-		int more;
+		ucg_int more;
 		if      ((first_byte & 0xF8) == 0xF0) { more = 3; rune |= (first_byte & 0x07) << 18; }
 		else if ((first_byte & 0xF0) == 0xE0) { more = 2; rune |= (first_byte & 0x0F) << 12; }
 		else if ((first_byte & 0xE0) == 0xC0) { more = 1; rune |= (first_byte & 0x1F) <<  6; }
@@ -92,16 +92,16 @@ ucg_rune ucg_decode_rune(const uint8_t* str, int strlen, int* byte_iterator) {
 	}
 }
 
-int ucg_binary_search(ucg_rune value, const ucg_rune* table, int length, int stride) {
+ucg_int ucg_binary_search(ucg_rune value, const ucg_rune* table, ucg_int length, ucg_int stride) {
 	assert(table != NULL);
 	assert(length > 0);
 	assert(stride > 0);
 
-	int n = length;
-	int t = 0;
+	ucg_int n = length;
+	ucg_int t = 0;
 	for (/**/; n > 1; /**/) {
-		int m = n / 2;
-		int p = t + m * stride;
+		ucg_int m = n / 2;
+		ucg_int p = t + m * stride;
 		if (value >= table[p]) {
 			t = p;
 			n = n - m;
@@ -333,7 +333,7 @@ bool ucg_is_gcb_extend_class(ucg_rune r) {
 // - 0 if non-printable / zero-width, or
 // - 1 in all other cases.
 //
-int ucg_normalized_east_asian_width(ucg_rune r) {
+ucg_int ucg_normalized_east_asian_width(ucg_rune r) {
 	if (ucg_is_control(r)) {
 		return 0;
 	} else if (r <= 0x10FF) {
@@ -353,7 +353,7 @@ int ucg_normalized_east_asian_width(ucg_rune r) {
 
 	intptr_t p = ucg_binary_search(r, ucg_normalized_east_asian_width_ranges, UCG_TABLE_LEN(ucg_normalized_east_asian_width_ranges)/3, 3);
 	if (p >= 0 && ucg_normalized_east_asian_width_ranges[p] <= r && r <= ucg_normalized_east_asian_width_ranges[p+1]) {
-		return (int)ucg_normalized_east_asian_width_ranges[p+2];
+		return (ucg_int)ucg_normalized_east_asian_width_ranges[p+2];
 	}
 	return 1;
 }
@@ -371,32 +371,32 @@ enum grapheme_cluster_sequence {
 
 typedef struct {
 	ucg_grapheme* graphemes;
-	int rune_count;
-	int grapheme_count;
-	int width;
+	ucg_int rune_count;
+	ucg_int grapheme_count;
+	ucg_int width;
 
 	ucg_rune last_rune;
 	bool last_rune_breaks_forward;
 
-	int last_width;
-	int last_grapheme_count;
+	ucg_int last_width;
+	ucg_int last_grapheme_count;
 
 	bool bypass_next_rune;
 
-	int regional_indicator_counter;
+	ucg_int regional_indicator_counter;
 
 	enum grapheme_cluster_sequence current_sequence;
 	bool continue_sequence;
 } ucg_decoder_state;
 
 
-int ucg_grapheme_count(
+ucg_int ucg_grapheme_count(
 	const uint8_t* str,
-	int str_len,
+	ucg_int str_len,
 
-	int* out_runes,
-	int* out_graphemes,
-	int* out_width
+	ucg_int* out_runes,
+	ucg_int* out_graphemes,
+	ucg_int* out_width
 ) {
 	return ucg_decode_grapheme_clusters(NULL, str, str_len, NULL, out_runes, out_graphemes, out_width);
 }
@@ -404,7 +404,7 @@ int ucg_grapheme_count(
 void _ucg_decode_grapheme_clusters_deferred_step(
 	ucg_allocator* allocator,
 	ucg_decoder_state* state,
-	int byte_index,
+	ucg_int byte_index,
 	ucg_rune this_rune
 ) {
 	// "Break at the start and end of text, unless the text is empty."
@@ -448,15 +448,15 @@ void _ucg_decode_grapheme_clusters_deferred_step(
 	state->continue_sequence = false;
 }
 
-int ucg_decode_grapheme_clusters(
+ucg_int ucg_decode_grapheme_clusters(
 	ucg_allocator* allocator,
 	const uint8_t* str,
-	int str_len,
+	ucg_int str_len,
 
 	ucg_grapheme** out_graphemes,
-	int* out_rune_count,
-	int* out_grapheme_count,
-	int* out_width
+	ucg_int* out_rune_count,
+	ucg_int* out_grapheme_count,
+	ucg_int* out_width
 ) {
 	// The following procedure implements text segmentation by breaking on
 	// Grapheme Cluster Boundaries[1], using the values[2] and rules[3] from
@@ -502,7 +502,7 @@ int ucg_decode_grapheme_clusters(
 
 #define UCG_DEFERRED_DECODE_STEP() (_ucg_decode_grapheme_clusters_deferred_step(allocator, &state, byte_index, this_rune))
 
-	for (int byte_index = 0, byte_iterator = 0; byte_index < str_len; byte_index = byte_iterator) {
+	for (ucg_int byte_index = 0, byte_iterator = 0; byte_index < str_len; byte_index = byte_iterator) {
 		ucg_rune this_rune = ucg_decode_rune(str, str_len, &byte_iterator);
 		if (this_rune < 0) {
 			// There was a Unicode parsing error; bail out.
@@ -512,7 +512,7 @@ int ucg_decode_grapheme_clusters(
 			if (out_width != NULL)          { *out_width = state.width; }
 
 			// Return the error.
-			return (int)this_rune;
+			return (ucg_int)this_rune;
 		}
 
 		// "Do not break between a CR and LF. Otherwise, break before and after controls."

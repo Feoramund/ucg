@@ -47,9 +47,11 @@ dealings in these Data Files or Software without prior written
 authorization of the copyright holder.
 */
 
+#include "../src/ucg.h"
+
 typedef struct {
 	const char* str;
-	int expected_clusters;
+	ucg_int expected_clusters;
 } test_case;
 
 
